@@ -122,8 +122,8 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(ellipse 80% 50% at 50% 50%, rgba(78, 205, 196, 0.08) 0%, transparent 50%),
-                linear-gradient(180deg, var(--deep) 0%, var(--dark) 100%);
+                linear-gradient(180deg, rgba(12, 24, 33, 0.4) 0%, rgba(12, 24, 33, 0.7) 50%, var(--deep) 100%),
+                url('images/river_bridge.jpg') center/cover no-repeat;
             z-index: -1;
         }
 
@@ -737,12 +737,6 @@
         }
 
         /* CTA Section */
-        .cta-section {
-            text-align: center;
-            padding: 6rem 2rem;
-            background: linear-gradient(180deg, var(--deep) 0%, var(--dark) 50%, var(--deep) 100%);
-        }
-
         .cta-title {
             font-family: 'Newsreader', serif;
             font-size: clamp(1.75rem, 4vw, 2.5rem);
@@ -936,6 +930,65 @@
             background: linear-gradient(90deg, var(--accent), transparent);
             margin: 4rem auto;
         }
+
+        /* Photo Feature */
+        .photo-feature {
+            position: relative;
+            margin: 3rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .photo-feature img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .photo-feature-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(0deg, rgba(12, 24, 33, 0.95) 0%, rgba(12, 24, 33, 0.7) 70%, transparent 100%);
+        }
+
+        .photo-feature-caption p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin: 0;
+            font-style: italic;
+        }
+
+        .photo-wide {
+            margin: 4rem -2rem;
+            border-radius: 0;
+        }
+
+        @media (min-width: 1200px) {
+            .photo-wide {
+                margin: 4rem calc(-50vw + 600px);
+            }
+        }
+
+        /* CTA with background */
+        .cta-section {
+            text-align: center;
+            padding: 8rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, var(--deep) 0%, rgba(12, 24, 33, 0.7) 30%, rgba(12, 24, 33, 0.7) 70%, var(--deep) 100%),
+                url('images/img_0093.jpg') center/cover no-repeat;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
@@ -986,6 +1039,13 @@
             <p>The Guyandotte River begins in the mountains near the Virginia border and flows northwest through Logan, Lincoln, and Cabell counties before joining the Ohio River at Huntington. Its lower reaches—designated as <strong>HUC 05070102</strong>—encompass some of the most heavily mined terrain in Appalachia.</p>
 
             <p>For generations, coal powered the economy here. But extraction left its mark: acid mine drainage seeping from abandoned portals, selenium leaching from valley fills, and sediment washing from disturbed slopes. The watershed tells two stories—one of industrial heritage, another of ecological recovery.</p>
+        </div>
+
+        <div class="photo-feature">
+            <img src="images/railroad_bridge.jpg" alt="CSX coal train crossing railroad bridge over the Guyandotte River">
+            <div class="photo-feature-caption">
+                <p>A CSX freight train crosses the Guyandotte River—coal has shaped this watershed for over a century.</p>
+            </div>
         </div>
 
         <div class="stats-grid">
@@ -1076,6 +1136,13 @@
         <p class="chapter-label">Chapter 3</p>
         <h2 class="chapter-title">55 Years of Watching the Water</h2>
         <p class="chapter-lead">This analysis draws on one of the longest continuous water quality records in Appalachia—spanning from pre-Clean Water Act baseline through modern intensive monitoring.</p>
+
+        <div class="photo-feature" style="margin-bottom: 3rem;">
+            <img src="images/img_0028.jpg" alt="Kayak view of the Guyandotte River approaching a bridge">
+            <div class="photo-feature-caption">
+                <p>The Guyandotte River near Huntington, where it joins the Ohio—the endpoint of a 55-year monitoring journey.</p>
+            </div>
+        </div>
 
         <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; align-items: start; margin-top: 3rem;">
             <div>
@@ -1438,11 +1505,11 @@
 
     <!-- CTA Section -->
     <section class="cta-section reveal" id="action">
-        <h2 class="cta-title">The Path Forward</h2>
-        <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto;">
+        <h2 class="cta-title" style="position: relative; z-index: 1;">The Path Forward</h2>
+        <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto; position: relative; z-index: 1;">
             80% of assessment units in the Lower Guyandotte are impaired. But the data also shows progress—metals declining, treatment working. The challenge now is sustaining momentum while addressing emerging concerns like selenium.
         </p>
-        <div class="cta-buttons">
+        <div class="cta-buttons" style="position: relative; z-index: 1;">
             <a href="https://dep.wv.gov/WWE/watershed/TMDL/Pages/default.aspx" class="btn btn-primary" target="_blank">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
