@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lower Guyandotte Watershed — A 55-Year Water Quality Story</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep: #0c1821;
+            --dark: #1b2838;
+            --mid: #2a4158;
+            --surface: #3d5a73;
+            --accent: #4ecdc4;
+            --accent-dim: #3db5ad;
+            --accent-glow: #6ee7df;
+            --warm: #f7fff7;
+            --warm-dim: #c9d6c9;
+            --gold: #ffe66d;
+            --amber: #f4a261;
+            --coral: #e76f51;
+            --slate: #8b9eb0;
+            --text: #e8f1f5;
+            --text-dim: #a3b8c7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--deep);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        .serif {
+            font-family: 'Newsreader', Georgia, serif;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: linear-gradient(180deg, rgba(12, 24, 33, 0.95) 0%, rgba(12, 24, 33, 0) 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(12, 24, 33, 0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-logo {
+            font-family: 'Newsreader', serif;
+            font-size: 1.1rem;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% 50%, rgba(78, 205, 196, 0.08) 0%, transparent 50%),
+                linear-gradient(180deg, var(--deep) 0%, var(--dark) 100%);
+            z-index: -1;
+        }
+
+        .hero-eyebrow {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.2s forwards;
+        }
+
+        .hero-title {
+            font-family: 'Newsreader', serif;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            font-weight: 400;
+            line-height: 1.1;
+            max-width: 900px;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.4s forwards;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.6s forwards;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.8s forwards;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            color: var(--accent);
+        }
+
+        .hero-stat-label {
+            font-size: 0.75rem;
+            color: var(--slate);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--slate);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 1.2s forwards;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(180deg, var(--accent), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(0.5); }
+            50% { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* Chapter Sections */
+        .chapter {
+            padding: 8rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .chapter-wide {
+            max-width: 100%;
+            padding: 8rem 0;
+        }
+
+        .chapter-narrow {
+            max-width: 720px;
+        }
+
+        .chapter-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chapter-label::before {
+            content: '';
+            width: 30px;
+            height: 1px;
+            background: var(--accent);
+        }
+
+        .chapter-title {
+            font-family: 'Newsreader', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 400;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+        }
+
+        .chapter-lead {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+
+        .prose {
+            font-size: 1.05rem;
+            color: var(--text-dim);
+            line-height: 1.9;
+        }
+
+        .prose p {
+            margin-bottom: 1.5rem;
+        }
+
+        .prose strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .prose a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(78, 205, 196, 0.05) 100%);
+            border-left: 3px solid var(--accent);
+            padding: 1.5rem 2rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        /* Big Number */
+        .big-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(4rem, 12vw, 8rem);
+            font-weight: 500;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-glow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .big-number-label {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: rgba(42, 65, 88, 0.3);
+            border: 1px solid rgba(78, 205, 196, 0.15);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .stat-card-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-card-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 0.75rem;
+        }
+
+        /* Full-Width Section */
+        .full-section {
+            background: var(--dark);
+            padding: 6rem 2rem;
+            margin: 4rem 0;
+        }
+
+        .full-section-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Pollutant Cards */
+        .pollutant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .pollutant-card {
+            background: rgba(12, 24, 33, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pollutant-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .pollutant-card.critical::before { background: var(--coral); }
+        .pollutant-card.warning::before { background: var(--amber); }
+        .pollutant-card.improving::before { background: var(--accent); }
+
+        .pollutant-name {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--slate);
+            margin-bottom: 0.5rem;
+        }
+
+        .pollutant-rate {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .pollutant-card.critical .pollutant-rate { color: var(--coral); }
+        .pollutant-card.warning .pollutant-rate { color: var(--amber); }
+        .pollutant-card.improving .pollutant-rate { color: var(--accent); }
+
+        .pollutant-context {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .pollutant-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .pollutant-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1.5s ease-out;
+        }
+
+        .pollutant-card.critical .pollutant-fill { background: linear-gradient(90deg, var(--coral), #f4a261); }
+        .pollutant-card.warning .pollutant-fill { background: linear-gradient(90deg, var(--amber), var(--gold)); }
+        .pollutant-card.improving .pollutant-fill { background: linear-gradient(90deg, var(--accent-dim), var(--accent)); }
+
+        .pollutant-standard {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--slate);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 4rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--mid), var(--accent));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 60px;
+            padding-bottom: 3rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 12px;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--deep);
+            border: 2px solid var(--accent);
+        }
+
+        .timeline-item.highlight .timeline-dot {
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .timeline-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-title {
+            font-family: 'Newsreader', serif;
+            font-size: 1.25rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        /* Trends Section */
+        .trends-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .trends-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .trend-column {
+            background: rgba(42, 65, 88, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .trend-column.good {
+            border: 1px solid rgba(78, 205, 196, 0.3);
+        }
+
+        .trend-column.concern {
+            border: 1px solid rgba(231, 111, 81, 0.3);
+        }
+
+        .trend-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .trend-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trend-column.good .trend-icon {
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--accent);
+        }
+
+        .trend-column.concern .trend-icon {
+            background: rgba(231, 111, 81, 0.2);
+            color: var(--coral);
+        }
+
+        .trend-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .trend-column.good .trend-label { color: var(--accent); }
+        .trend-column.concern .trend-label { color: var(--coral); }
+
+        .trend-list {
+            list-style: none;
+        }
+
+        .trend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .trend-item:last-child {
+            border-bottom: none;
+        }
+
+        .trend-param {
+            color: var(--text);
+        }
+
+        .trend-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+        }
+
+        .trend-column.good .trend-value { color: var(--accent); }
+        .trend-column.concern .trend-value { color: var(--coral); }
+
+        /* Hotspots */
+        .hotspot-list {
+            margin: 3rem 0;
+        }
+
+        .hotspot-item {
+            display: grid;
+            grid-template-columns: 3rem 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+            padding: 1.25rem;
+            background: rgba(42, 65, 88, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .hotspot-item:hover {
+            background: rgba(42, 65, 88, 0.4);
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .hotspot-rank {
+            font-family: 'Newsreader', serif;
+            font-size: 1.75rem;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .hotspot-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .hotspot-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--slate);
+            background: rgba(0,0,0,0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+        }
+
+        .hotspot-item:nth-child(1) .hotspot-score { color: var(--coral); background: rgba(231, 111, 81, 0.15); }
+        .hotspot-item:nth-child(2) .hotspot-score { color: var(--amber); background: rgba(244, 162, 97, 0.15); }
+        .hotspot-item:nth-child(3) .hotspot-score { color: var(--gold); background: rgba(255, 230, 109, 0.15); }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table th {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--slate);
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 2px solid rgba(78, 205, 196, 0.3);
+            background: rgba(42, 65, 88, 0.3);
+        }
+
+        .comparison-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: top;
+        }
+
+        .comparison-table tr:hover td {
+            background: rgba(42, 65, 88, 0.2);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+        }
+
+        .status-pill.match {
+            background: rgba(78, 205, 196, 0.15);
+            color: var(--accent);
+        }
+
+        .status-pill.diff {
+            background: rgba(244, 162, 97, 0.15);
+            color: var(--amber);
+        }
+
+        /* Methodology Accordion */
+        .method-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .method-card {
+            background: rgba(42, 65, 88, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .method-card h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+        }
+
+        .method-card p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .method-card code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: rgba(0,0,0,0.3);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            color: var(--accent);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--deep) 0%, var(--dark) 50%, var(--deep) 100%);
+        }
+
+        .cta-title {
+            font-family: 'Newsreader', serif;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--deep);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .footer-logo {
+            font-family: 'Newsreader', serif;
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            font-size: 0.85rem;
+            color: var(--slate);
+            line-height: 1.8;
+        }
+
+        .footer-text a {
+            color: var(--accent-dim);
+            text-decoration: none;
+        }
+
+        .footer-text a:hover {
+            color: var(--accent);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--deep);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--mid);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dim);
+        }
+
+        /* Quote Block */
+        .quote-block {
+            border-left: 3px solid var(--accent);
+            padding-left: 2rem;
+            margin: 3rem 0;
+        }
+
+        .quote-block p {
+            font-family: 'Newsreader', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .quote-attribution {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--slate);
+            font-style: normal;
+        }
+
+        /* Image placeholders */
+        .map-placeholder {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 100%);
+            border: 1px dashed rgba(78, 205, 196, 0.3);
+            border-radius: 12px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .map-placeholder-text {
+            color: var(--slate);
+            font-size: 0.9rem;
+        }
+
+        /* Plot gallery */
+        .plot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .plot-card {
+            background: rgba(42, 65, 88, 0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .plot-card:hover {
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+
+        .plot-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .plot-caption {
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        /* Divider */
+        .divider {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            margin: 4rem auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="nav">
+        <a href="#" class="nav-logo">Lower Guyandotte</a>
+        <ul class="nav-links">
+            <li><a href="#watershed">The Watershed</a></li>
+            <li><a href="#challenge">The Challenge</a></li>
+            <li><a href="#data">The Data</a></li>
+            <li><a href="#findings">Findings</a></li>
+            <li><a href="#action">Action</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <p class="hero-eyebrow">West Virginia Water Quality Assessment</p>
+        <h1 class="hero-title">The Story of the <em>Lower Guyandotte</em></h1>
+        <p class="hero-subtitle">55 years of water quality monitoring reveal a watershed shaped by coal country's past—and hints at its possible future.</p>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <p class="hero-stat-value">103,534</p>
+                <p class="hero-stat-label">Samples Analyzed</p>
+            </div>
+            <div class="hero-stat">
+                <p class="hero-stat-value">55</p>
+                <p class="hero-stat-label">Years of Data</p>
+            </div>
+            <div class="hero-stat">
+                <p class="hero-stat-value">80%</p>
+                <p class="hero-stat-label">Waters Impaired</p>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <!-- Chapter 1: The Watershed -->
+    <section class="chapter chapter-narrow reveal" id="watershed">
+        <p class="chapter-label">Chapter 1</p>
+        <h2 class="chapter-title">A River Runs Through Coal Country</h2>
+        <p class="chapter-lead">The Lower Guyandotte watershed drains 834 square miles of southern West Virginia—a landscape defined by steep hollows, winding creeks, and a century of coal mining.</p>
+
+        <div class="prose">
+            <p>The Guyandotte River begins in the mountains near the Virginia border and flows northwest through Logan, Lincoln, and Cabell counties before joining the Ohio River at Huntington. Its lower reaches—designated as <strong>HUC 05070102</strong>—encompass some of the most heavily mined terrain in Appalachia.</p>
+
+            <p>For generations, coal powered the economy here. But extraction left its mark: acid mine drainage seeping from abandoned portals, selenium leaching from valley fills, and sediment washing from disturbed slopes. The watershed tells two stories—one of industrial heritage, another of ecological recovery.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p class="stat-card-value">834</p>
+                <p class="stat-card-label">Square miles of watershed</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-card-value">335</p>
+                <p class="stat-card-label">Assessment units</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-card-value">884</p>
+                <p class="stat-card-label">Monitoring stations</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-card-value">192</p>
+                <p class="stat-card-label">Parameters measured</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 2: The Challenge -->
+    <section class="chapter chapter-narrow reveal" id="challenge">
+        <p class="chapter-label">Chapter 2</p>
+        <h2 class="chapter-title">When Water Fails Its Standards</h2>
+
+        <div class="prose">
+            <p>Under the <strong>Clean Water Act of 1972</strong>, every waterway in America has a designated use—swimming, fishing, drinking water supply, or aquatic life habitat. When monitoring shows a stream can't support its designated use, it's listed as <strong>impaired</strong>.</p>
+
+            <p>For impaired waters, states must develop a <strong>Total Maximum Daily Load (TMDL)</strong>—essentially a pollution budget that calculates how much of a given contaminant the water can receive while still meeting standards.</p>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>A TMDL answers a simple question:</strong> How much pollution is too much? It sets the ceiling, then allocates responsibility among sources—point discharges, nonpoint runoff, and natural background.</p>
+        </div>
+
+        <div class="prose">
+            <p>West Virginia applies its own criteria under <strong>47CSR2</strong>, the state's water quality standards. These specify numeric limits for pollutants and narrative criteria for conditions like "no objectionable deposits" or "waters suitable for aquatic life."</p>
+
+            <p>In the Lower Guyandotte, six parameters drive most impairments:</p>
+        </div>
+
+        <div class="pollutant-grid">
+            <div class="pollutant-card critical">
+                <p class="pollutant-name">Hot Acidity</p>
+                <p class="pollutant-rate">100%</p>
+                <p class="pollutant-context">All samples exceed — legacy of acid mine drainage</p>
+                <div class="pollutant-bar"><div class="pollutant-fill" style="width: 100%"></div></div>
+                <p class="pollutant-standard">Standard: 0 mg/L CaCO3</p>
+            </div>
+            <div class="pollutant-card warning">
+                <p class="pollutant-name">Fecal Coliform</p>
+                <p class="pollutant-rate">38.4%</p>
+                <p class="pollutant-context">Bacteria from failing septics and agriculture</p>
+                <div class="pollutant-bar"><div class="pollutant-fill" style="width: 38.4%"></div></div>
+                <p class="pollutant-standard">Standard: 200/400 CFU per 100mL</p>
+            </div>
+            <div class="pollutant-card warning">
+                <p class="pollutant-name">Specific Conductance</p>
+                <p class="pollutant-rate">27.5%</p>
+                <p class="pollutant-context">Dissolved solids from mining operations</p>
+                <div class="pollutant-bar"><div class="pollutant-fill" style="width: 27.5%"></div></div>
+                <p class="pollutant-standard">Benchmark: 500 µS/cm</p>
+            </div>
+            <div class="pollutant-card warning">
+                <p class="pollutant-name">Selenium</p>
+                <p class="pollutant-rate">15.1%</p>
+                <p class="pollutant-context">Mobilized by surface mining — rising trend</p>
+                <div class="pollutant-bar"><div class="pollutant-fill" style="width: 15.1%"></div></div>
+                <p class="pollutant-standard">Standard: 0.005 mg/L</p>
+            </div>
+            <div class="pollutant-card improving">
+                <p class="pollutant-name">Iron, Total</p>
+                <p class="pollutant-rate">8.7%</p>
+                <p class="pollutant-context">Improving with AMD treatment systems</p>
+                <div class="pollutant-bar"><div class="pollutant-fill" style="width: 8.7%"></div></div>
+                <p class="pollutant-standard">Standard: 1.5 mg/L</p>
+            </div>
+            <div class="pollutant-card improving">
+                <p class="pollutant-name">Aluminum, Dissolved</p>
+                <p class="pollutant-rate">0.5%</p>
+                <p class="pollutant-context">Generally meeting criteria</p>
+                <div class="pollutant-bar"><div class="pollutant-fill" style="width: 0.5%"></div></div>
+                <p class="pollutant-standard">Standard: 0.75 mg/L</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 3: The Data -->
+    <section class="chapter reveal" id="data">
+        <p class="chapter-label">Chapter 3</p>
+        <h2 class="chapter-title">55 Years of Watching the Water</h2>
+        <p class="chapter-lead">This analysis draws on one of the longest continuous water quality records in Appalachia—spanning from pre-Clean Water Act baseline through modern intensive monitoring.</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; align-items: start; margin-top: 3rem;">
+            <div>
+                <div class="big-number">1970</div>
+                <p class="big-number-label">First samples collected—two years before the Clean Water Act reshaped American environmental law</p>
+
+                <div style="margin-top: 3rem;">
+                    <div class="big-number">2025</div>
+                    <p class="big-number-label">Most recent data—monitoring continues through September</p>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item highlight">
+                    <div class="timeline-dot"></div>
+                    <p class="timeline-year">1970</p>
+                    <p class="timeline-title">Monitoring Begins</p>
+                    <p class="timeline-desc">First water quality samples establish pre-regulatory baseline. These early measurements capture conditions before modern pollution controls—essential context for measuring progress.</p>
+                </div>
+                <div class="timeline-item highlight">
+                    <div class="timeline-dot"></div>
+                    <p class="timeline-year">1972</p>
+                    <p class="timeline-title">Clean Water Act Enacted</p>
+                    <p class="timeline-desc">Federal framework for water pollution control. Sets goal of "fishable, swimmable" waters nationwide and creates the NPDES permit system for point source discharges.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <p class="timeline-year">1977</p>
+                    <p class="timeline-title">SMCRA Passed</p>
+                    <p class="timeline-desc">Surface Mining Control and Reclamation Act requires coal operators to restore mined land and control sediment—critical for Appalachian watersheds like the Guyandotte.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <p class="timeline-year">1987</p>
+                    <p class="timeline-title">Water Quality Act</p>
+                    <p class="timeline-desc">Strengthens nonpoint source controls and establishes the Section 319 grant program for watershed restoration projects.</p>
+                </div>
+                <div class="timeline-item highlight">
+                    <div class="timeline-dot"></div>
+                    <p class="timeline-year">2000s</p>
+                    <p class="timeline-title">TMDL Program Expansion</p>
+                    <p class="timeline-desc">EPA consent decree drives intensive monitoring to support impaired waters listings. Sampling frequency increases dramatically.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <p class="timeline-year">2010s</p>
+                    <p class="timeline-title">Monitoring Intensification</p>
+                    <p class="timeline-desc">59% of all historical samples collected in this decade. Selenium monitoring expanded as surface mining impacts become apparent.</p>
+                </div>
+                <div class="timeline-item highlight">
+                    <div class="timeline-dot"></div>
+                    <p class="timeline-year">2022</p>
+                    <p class="timeline-title">TMDL Report Approved</p>
+                    <p class="timeline-desc">EPA approves comprehensive Lower Guyandotte TMDL addressing fecal coliform, iron, aluminum, selenium, and biological impairments.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3 style="font-family: 'Newsreader', serif; font-size: 1.5rem; margin-bottom: 1.5rem;">Sampling Intensity by Decade</h3>
+        <p class="prose" style="margin-bottom: 2rem;">The monitoring record isn't uniform—sampling intensified dramatically after 2000 as the TMDL program expanded. Over three-quarters of all data comes from 2010 onward, providing high-resolution insight into recent conditions while earlier decades establish longer-term context.</p>
+
+        <div style="max-width: 600px;">
+            <div style="display: grid; gap: 0.75rem;">
+                <div style="display: grid; grid-template-columns: 70px 1fr 90px; align-items: center; gap: 1rem;">
+                    <span class="mono" style="font-size: 0.85rem; color: var(--text-dim);">1970s</span>
+                    <div style="height: 8px; background: var(--dark); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 11%; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                    <span class="mono" style="font-size: 0.8rem; color: var(--slate); text-align: right;">6,673</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 70px 1fr 90px; align-items: center; gap: 1rem;">
+                    <span class="mono" style="font-size: 0.85rem; color: var(--text-dim);">1980s</span>
+                    <div style="height: 8px; background: var(--dark); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 7%; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                    <span class="mono" style="font-size: 0.8rem; color: var(--slate); text-align: right;">4,268</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 70px 1fr 90px; align-items: center; gap: 1rem;">
+                    <span class="mono" style="font-size: 0.85rem; color: var(--text-dim);">1990s</span>
+                    <div style="height: 8px; background: var(--dark); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 6%; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                    <span class="mono" style="font-size: 0.8rem; color: var(--slate); text-align: right;">3,482</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 70px 1fr 90px; align-items: center; gap: 1rem;">
+                    <span class="mono" style="font-size: 0.85rem; color: var(--text-dim);">2000s</span>
+                    <div style="height: 8px; background: var(--dark); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 15%; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                    <span class="mono" style="font-size: 0.8rem; color: var(--slate); text-align: right;">8,936</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 70px 1fr 90px; align-items: center; gap: 1rem;">
+                    <span class="mono" style="font-size: 0.85rem; color: var(--text-dim);">2010s</span>
+                    <div style="height: 8px; background: var(--dark); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                    <span class="mono" style="font-size: 0.8rem; color: var(--slate); text-align: right;">60,599</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 70px 1fr 90px; align-items: center; gap: 1rem;">
+                    <span class="mono" style="font-size: 0.85rem; color: var(--text-dim);">2020s</span>
+                    <div style="height: 8px; background: var(--dark); border-radius: 4px; overflow: hidden;">
+                        <div style="width: 32%; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 4px;"></div>
+                    </div>
+                    <span class="mono" style="font-size: 0.8rem; color: var(--slate); text-align: right;">19,576</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 4: Findings -->
+    <section class="full-section reveal" id="findings">
+        <div class="full-section-inner">
+            <p class="chapter-label">Chapter 4</p>
+            <h2 class="chapter-title">What the Data Reveals</h2>
+            <p class="chapter-lead" style="max-width: 700px;">After analyzing 103,534 samples against West Virginia 47CSR2 standards, clear patterns emerge: some pollutants are declining thanks to treatment efforts, while others demand renewed attention.</p>
+
+            <div class="trends-split">
+                <div class="trend-column good">
+                    <div class="trend-header">
+                        <div class="trend-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                            </svg>
+                        </div>
+                        <span class="trend-label">Improving Trends</span>
+                    </div>
+                    <ul class="trend-list">
+                        <li class="trend-item">
+                            <span class="trend-param">Aluminum, Total</span>
+                            <span class="trend-value">-89.7%</span>
+                        </li>
+                        <li class="trend-item">
+                            <span class="trend-param">Manganese</span>
+                            <span class="trend-value">-67.7%</span>
+                        </li>
+                        <li class="trend-item">
+                            <span class="trend-param">Iron, Total</span>
+                            <span class="trend-value">-25.0%</span>
+                        </li>
+                        <li class="trend-item">
+                            <span class="trend-param">Fecal Coliform</span>
+                            <span class="trend-value">-3.2%</span>
+                        </li>
+                    </ul>
+                    <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 1rem; line-height: 1.7;">AMD treatment systems and reclamation bonding are paying off. Metal concentrations have dropped significantly since the 1970s.</p>
+                </div>
+
+                <div class="trend-column concern">
+                    <div class="trend-header">
+                        <div class="trend-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                            </svg>
+                        </div>
+                        <span class="trend-label">Concerning Trends</span>
+                    </div>
+                    <ul class="trend-list">
+                        <li class="trend-item">
+                            <span class="trend-param">Selenium, Total</span>
+                            <span class="trend-value">+30.0%</span>
+                        </li>
+                    </ul>
+                    <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 1rem; line-height: 1.7;">Selenium is mobilized when overburden is exposed to air and water during surface mining. Unlike acid drainage, it's not easily treated and bioaccumulates in aquatic food chains.</p>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3 style="font-family: 'Newsreader', serif; font-size: 1.75rem; margin-bottom: 1rem;">Validating the TMDL Report</h3>
+            <p style="color: var(--text-dim); max-width: 700px; margin-bottom: 2rem;">How do our independent findings compare with the official 2022 TMDL assessment? The table below shows general alignment—with one notable exception.</p>
+
+            <div style="overflow-x: auto;">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Our Analysis</th>
+                            <th>TMDL Report</th>
+                            <th>Assessment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Fecal Coliform</strong></td>
+                            <td>38.4% exceedance<br><span style="color: var(--slate);">Geomean: 232 CFU/100mL</span></td>
+                            <td>~30% exceedance<br><span style="color: var(--slate);">Primary impairment</span></td>
+                            <td><span class="status-pill diff">Higher rate — method differences likely</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Iron, Total</strong></td>
+                            <td>8.7% exceedance<br><span style="color: var(--slate);">Trend: -25%</span></td>
+                            <td>Improving trend<br><span style="color: var(--slate);">AMD treatment success</span></td>
+                            <td><span class="status-pill match">Consistent</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Aluminum</strong></td>
+                            <td>0.5% exceedance<br><span style="color: var(--slate);">Trend: -89.7%</span></td>
+                            <td>Generally compliant<br><span style="color: var(--slate);">Below criteria</span></td>
+                            <td><span class="status-pill match">Consistent</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Selenium</strong></td>
+                            <td>15.1% exceedance<br><span style="color: var(--slate);">Trend: +30%</span></td>
+                            <td>Increasing concern<br><span style="color: var(--slate);">Mining correlation</span></td>
+                            <td><span class="status-pill match">Consistent</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Specific Conductance</strong></td>
+                            <td>27.5% exceedance<br><span style="color: var(--slate);">Mining indicator</span></td>
+                            <td>Elevated throughout<br><span style="color: var(--slate);">TDS proxy</span></td>
+                            <td><span class="status-pill match">Consistent</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 5: Priority Areas -->
+    <section class="chapter reveal">
+        <p class="chapter-label">Chapter 5</p>
+        <h2 class="chapter-title">Where It Hurts Most</h2>
+        <p class="chapter-lead">Not all subwatersheds are equal. Our analysis ranks each HUC12 by a composite impairment score—flagging priority areas for restoration investment.</p>
+
+        <div class="prose">
+            <p>The impairment score weights exceedances by parameter severity and frequency. High scores indicate subwatersheds with <strong>multiple pollutants exceeding standards across many samples</strong>—the streams most in need of attention.</p>
+        </div>
+
+        <div class="hotspot-list">
+            <div class="hotspot-item">
+                <span class="hotspot-rank">1</span>
+                <span class="hotspot-name">Davis Creek–Guyandotte River</span>
+                <span class="hotspot-score">Score: 1,020</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">2</span>
+                <span class="hotspot-name">Ballard Fork–Mud River</span>
+                <span class="hotspot-score">Score: 912</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">3</span>
+                <span class="hotspot-name">Crawley Creek–Guyandotte River</span>
+                <span class="hotspot-score">Score: 759</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">4</span>
+                <span class="hotspot-name">Big Harts Creek</span>
+                <span class="hotspot-score">Score: 365</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">5</span>
+                <span class="hotspot-name">Big Creek–Mud River</span>
+                <span class="hotspot-score">Score: 346</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">6</span>
+                <span class="hotspot-name">Merrick Creek–Mud River</span>
+                <span class="hotspot-score">Score: 283</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">7</span>
+                <span class="hotspot-name">Fourteenmile Creek–Guyandotte River</span>
+                <span class="hotspot-score">Score: 260</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">8</span>
+                <span class="hotspot-name">Big Creek</span>
+                <span class="hotspot-score">Score: 240</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">9</span>
+                <span class="hotspot-name">Smith Creek–Guyandotte River</span>
+                <span class="hotspot-score">Score: 213</span>
+            </div>
+            <div class="hotspot-item">
+                <span class="hotspot-rank">10</span>
+                <span class="hotspot-name">Middle Fork Mud River</span>
+                <span class="hotspot-score">Score: 203</span>
+            </div>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 3rem;">
+            <p>The top three subwatersheds account for <strong>47% of total watershed impairment</strong>. Targeted restoration here would yield disproportionate water quality gains.</p>
+        </div>
+    </section>
+
+    <!-- Chapter 6: Visualizations -->
+    <section class="chapter reveal">
+        <p class="chapter-label">Chapter 6</p>
+        <h2 class="chapter-title">The Visual Evidence</h2>
+        <p class="chapter-lead">Data visualizations generated from our Python analysis pipeline, applying WV 47CSR2 standards to 55 years of ambient monitoring data.</p>
+
+        <div class="plot-grid">
+            <div class="plot-card">
+                <img src="wq_analysis_output_v2/plots/exceedance_rates.png" alt="Exceedance Rates" onerror="this.closest('.plot-card').style.display='none'">
+                <p class="plot-caption">Parameter exceedance rates against WV water quality standards</p>
+            </div>
+            <div class="plot-card">
+                <img src="wq_analysis_output_v2/plots/temporal_trends.png" alt="Temporal Trends" onerror="this.closest('.plot-card').style.display='none'">
+                <p class="plot-caption">Long-term concentration trends for key parameters</p>
+            </div>
+            <div class="plot-card">
+                <img src="wq_analysis_output_v2/plots/fecal_coliform_distribution.png" alt="Fecal Coliform" onerror="this.closest('.plot-card').style.display='none'">
+                <p class="plot-caption">Fecal coliform distribution with regulatory thresholds</p>
+            </div>
+            <div class="plot-card">
+                <img src="wq_analysis_output_v2/plots/mining_signature.png" alt="Mining Signature" onerror="this.closest('.plot-card').style.display='none'">
+                <p class="plot-caption">Specific conductance vs. sulfate — mining impact indicator</p>
+            </div>
+            <div class="plot-card">
+                <img src="wq_analysis_output_v2/plots/huc12_impairment.png" alt="HUC12 Impairment" onerror="this.closest('.plot-card').style.display='none'">
+                <p class="plot-caption">Subwatershed impairment severity ranking</p>
+            </div>
+            <div class="plot-card">
+                <img src="wq_analysis_output_v2/plots/seasonal_patterns.png" alt="Seasonal Patterns" onerror="this.closest('.plot-card').style.display='none'">
+                <p class="plot-caption">Seasonal variation in water quality parameters</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chapter 7: Methodology -->
+    <section class="chapter chapter-narrow reveal">
+        <p class="chapter-label">Chapter 7</p>
+        <h2 class="chapter-title">How We Did It</h2>
+        <p class="chapter-lead">Transparent methodology matters. Here's how we processed the data and what standards we applied.</p>
+
+        <div class="method-grid">
+            <div class="method-card">
+                <h4>WV 47CSR2 Standards</h4>
+                <p>Applied West Virginia-specific criteria: <code>Fe: 1.5 mg/L</code>, <code>pH: 6.0–9.0</code>, <code>Al dissolved: 0.75 mg/L</code>—not generic EPA values.</p>
+            </div>
+            <div class="method-card">
+                <h4>Ambient Data Only</h4>
+                <p>Filtered to exclude point source discharge monitoring. Only ambient stream samples used for assessment—identified by AU_ID patterns.</p>
+            </div>
+            <div class="method-card">
+                <h4>Non-Detect Handling</h4>
+                <p>Left-censored data processed with <code>Kaplan-Meier</code> survival analysis. Half-detection-limit substitution for trend analysis.</p>
+            </div>
+            <div class="method-card">
+                <h4>Fecal Coliform Protocol</h4>
+                <p>Two-part standard: <code>200 CFU/100mL</code> geometric mean per station plus <code>400 CFU/100mL</code> single-sample max.</p>
+            </div>
+            <div class="method-card">
+                <h4>Trend Analysis</h4>
+                <p>Mann-Kendall test for monotonic trends. Sen's slope for magnitude. Significance at <code>p &lt; 0.05</code>.</p>
+            </div>
+            <div class="method-card">
+                <h4>Impairment Scoring</h4>
+                <p>Composite score per HUC12 weighting parameter-specific exceedances by ecological severity and sample frequency.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section reveal" id="action">
+        <h2 class="cta-title">The Path Forward</h2>
+        <p style="color: var(--text-dim); max-width: 600px; margin: 0 auto;">
+            80% of assessment units in the Lower Guyandotte are impaired. But the data also shows progress—metals declining, treatment working. The challenge now is sustaining momentum while addressing emerging concerns like selenium.
+        </p>
+        <div class="cta-buttons">
+            <a href="https://dep.wv.gov/WWE/watershed/TMDL/Pages/default.aspx" class="btn btn-primary" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                Official TMDL Documents
+            </a>
+            <a href="https://github.com/crackedcoco/lower-guyandotte-wq-analysis" class="btn btn-secondary" target="_blank">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                View Analysis Code
+            </a>
+            <a href="mailto:depwqsas@wv.gov" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Contact WV DEP
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="footer-logo">Lower Guyandotte Water Quality Analysis</p>
+        <p class="footer-text">
+            Data source: <a href="https://dep.wv.gov" target="_blank">West Virginia DEP</a> Ambient Water Quality Monitoring Program<br>
+            Analysis generated January 2026 using Python with WV 47CSR2 standards<br><br>
+            <a href="https://storymaps.arcgis.com/stories/a288c36e4ae74f1f9f907ad6d09215a1" target="_blank">View official WV DEP StoryMap</a> ·
+            <a href="index.html">View data dashboard</a>
+        </p>
+    </footer>
+
+    <script>
+        // Navigation scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Reveal on scroll
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Animate pollutant bars on scroll
+        const pollutantCards = document.querySelectorAll('.pollutant-card');
+        const barObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fill = entry.target.querySelector('.pollutant-fill');
+                    if (fill) {
+                        const width = fill.style.width;
+                        fill.style.width = '0%';
+                        setTimeout(() => {
+                            fill.style.width = width;
+                        }, 100);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        pollutantCards.forEach(card => barObserver.observe(card));
+    </script>
+</body>
+</html>

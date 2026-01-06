@@ -1,0 +1,2 @@
+n_samples,geometric_mean,geomean_standard,geomean_exceeds,n_exceed_400,pct_exceed_400,single_sample_standard,median,max,pct_non_detect,n_stations_total,n_stations_impaired,impaired_stations
+4834,232.15902757240084,200,True,1856,38.39470417873397,400,254.0,710700.0,3.0409598676044682,489,380,380 stations

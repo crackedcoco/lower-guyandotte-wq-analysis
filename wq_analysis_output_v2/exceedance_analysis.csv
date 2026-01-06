@@ -1,0 +1,11 @@
+,standard_value,standard_type,standard_unit,standard_source,designated_use,n_samples,n_exceedances,exceedance_percent,exceedance_detail,min_value,max_value,median_value,n_stations_exceeding
+Fecal Coliform (MF),400,max,CFU/100 mL,WV 47CSR2,Recreation (Category B),4834,1856,38.39470417873397,{'above_max': 1856},2.0,710700.0,254.0,358
+"Fe, Total",1.5,max,mg/L,WV 47CSR2,Aquatic Life,4690,406,8.656716417910447,{'above_max': 406},0.0098,58.5,0.35,146
+"Al, Dissolved",0.75,max,mg/L,WV 47CSR2,Aquatic Life,2070,11,0.5314009661835749,{'above_max': 11},0.005,8.42,0.02,5
+"Mn, Total",1.0,max,mg/L,WV 47CSR2,Aquatic Life,1615,21,1.3003095975232197,{'above_max': 21},0.0029,11.6,0.0579,8
+"Se, Total",0.005,max,mg/L,WV 47CSR2,Aquatic Life (Chronic),2210,333,15.06787330316742,{'above_max': 333},0.00051,0.078,0.001,39
+pH,"(6.0, 9.0)",range,SU,WV 47CSR2,Aquatic Life,6391,65,1.0170552339227037,"{'below_min': 40, 'above_max': 25}",3.85,9.83,7.53,
+DO,5.0,min,mg/L,WV 47CSR2,Aquatic Life (Warmwater),6160,229,3.7175324675324677,{'below_min': 229},0.0,23.85,9.62,44
+Specific Conductance,500,max,uS/cm,EPA Guidance / WV Benchmark,Aquatic Life (Narrative),6364,1747,27.451288497800125,{'above_max': 1747},7.52,3016.0,262.0,207
+Sulfate (SO4),250,max,mg/L,EPA Secondary MCL,Human Health,2553,469,18.37054445750098,{'above_max': 469},1.0,1620.0,68.2,87
+Hot Acidity,0,max,mg/L CaCO3,WV Narrative,Aquatic Life,2449,2449,100.0,{'above_max': 2449},0.2,181.0,5.0,421

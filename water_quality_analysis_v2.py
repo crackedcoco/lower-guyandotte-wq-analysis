@@ -52,7 +52,7 @@ class AnalysisConfig:
     """Configuration settings for the water quality analysis."""
 
     # File paths
-    input_file: Path = Path("05070102_Lower_Guyandotte.csv")
+    input_file: Path = Path("05070102_Lower_Guyandotte_clean.csv")
     output_dir: Path = Path("wq_analysis_output_v2")
 
     # Analysis settings
@@ -320,10 +320,11 @@ class WaterQualityDataLoader:
 
     def _clean_numeric_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         """Clean and convert numeric columns."""
-        numeric_cols = ['VALUE', 'DL', 'QL', 'DEPTH', 'DISTANCE',
-                        'MILE_POINT', 'LON_DD', 'LAT_DD']
+        numeric_cols = ['VALUE', 'DL', 'QL', 'DEPTH', 'DISTANCE', 'MILE_POINT']
         for col in numeric_cols:
             if col in df.columns:
+                # Replace 'None' strings with actual NaN
+                df[col] = df[col].replace('None', pd.NA)
                 df[col] = pd.to_numeric(df[col], errors='coerce')
         return df
 
@@ -423,14 +424,18 @@ class WaterQualityDataLoader:
 
     def _clean_coordinates(self, df: pd.DataFrame) -> pd.DataFrame:
         """Validate and clean coordinate data."""
+        # Convert string coordinates to numeric
+        df['LON_DD'] = pd.to_numeric(df['LON_DD'], errors='coerce')
+        df['LAT_DD'] = pd.to_numeric(df['LAT_DD'], errors='coerce')
+
         df['VALID_COORDS'] = (
             df['LON_DD'].notna() & df['LAT_DD'].notna() &
             (df['LON_DD'] >= -83) & (df['LON_DD'] <= -81) &  # WV bounds
             (df['LAT_DD'] >= 37) & (df['LAT_DD'] <= 40)
         )
-        invalid_coords = (~df['VALID_COORDS']).sum()
-        if invalid_coords > 0:
-            self.logger.warning(f"Found {invalid_coords:,} records with invalid/missing coordinates")
+        valid_count = df['VALID_COORDS'].sum()
+        invalid_count = (~df['VALID_COORDS']).sum()
+        self.logger.info(f"  Coordinates: {valid_count:,} valid, {invalid_count:,} invalid/missing")
         return df
 
     def _add_derived_columns(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -691,6 +696,16 @@ class StatisticalAnalysis:
 
             exceedance_pct = 100 * n_exceedances / len(values)
 
+            # Calculate stations exceeding
+            if limit_type == 'range':
+                n_stations_exc = np.nan
+            else:
+                if limit_type == 'max':
+                    exceeding_mask = param_data['VALUE'] > limit
+                else:
+                    exceeding_mask = param_data['VALUE'] < limit
+                n_stations_exc = param_data.loc[exceeding_mask, 'STATION_ID'].nunique()
+
             exceedances[param] = {
                 'standard_value': limit,
                 'standard_type': limit_type,
@@ -704,9 +719,7 @@ class StatisticalAnalysis:
                 'min_value': float(values.min()),
                 'max_value': float(values.max()),
                 'median_value': float(values.median()),
-                'n_stations_exceeding': param_data[
-                    (values > limit) if limit_type == 'max' else (values < limit)
-                ]['STATION_ID'].nunique() if limit_type != 'range' else np.nan,
+                'n_stations_exceeding': n_stations_exc,
             }
 
             if n_exceedances > 0:
@@ -1604,10 +1617,12 @@ class ReportGenerator:
         # Fecal coliform section
         if 'fecal_coliform' in stats_results:
             fc = stats_results['fecal_coliform']
+            geomean = fc.get('geometric_mean', None)
+            geomean_str = f"{geomean:.1f}" if isinstance(geomean, (int, float)) and not pd.isna(geomean) else "N/A"
             lines.extend([
                 "FECAL COLIFORM ANALYSIS",
                 "-" * 50,
-                f"Geometric Mean: {fc.get('geometric_mean', 'N/A'):.1f} CFU/100mL (Standard: 200)",
+                f"Geometric Mean: {geomean_str} CFU/100mL (Standard: 200)",
                 f"Samples > 400: {fc.get('n_exceed_400', 0):,} ({fc.get('pct_exceed_400', 0):.1f}%)",
                 f"Impaired Stations: {fc.get('n_stations_impaired', 0)} of {fc.get('n_stations_total', 0)}",
                 "",

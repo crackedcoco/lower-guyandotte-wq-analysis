@@ -1,0 +1,60 @@
+================================================================================
+WATER QUALITY ANALYSIS REPORT - VERSION 2.0
+Lower Guyandotte Watershed (HUC 05070102)
+Generated: 2026-01-06 17:36:15
+Standards: West Virginia 47CSR2
+================================================================================
+
+WATER QUALITY STANDARD EXCEEDANCES (WV 47CSR2)
+--------------------------------------------------
+Fecal Coliform (MF): 1,856 exceedances (38.4%) of 4,834 samples [Standard: 400 CFU/100 mL]
+Fe, Total: 406 exceedances (8.7%) of 4,690 samples [Standard: 1.5 mg/L]
+Al, Dissolved: 11 exceedances (0.5%) of 2,070 samples [Standard: 0.75 mg/L]
+Mn, Total: 21 exceedances (1.3%) of 1,615 samples [Standard: 1.0 mg/L]
+Se, Total: 333 exceedances (15.1%) of 2,210 samples [Standard: 0.005 mg/L]
+pH: 65 exceedances (1.0%) of 6,391 samples [Standard: (6.0, 9.0) SU]
+DO: 229 exceedances (3.7%) of 6,160 samples [Standard: 5.0 mg/L]
+Specific Conductance: 1,747 exceedances (27.5%) of 6,364 samples [Standard: 500 uS/cm]
+Sulfate (SO4): 469 exceedances (18.4%) of 2,553 samples [Standard: 250 mg/L]
+Hot Acidity: 2,449 exceedances (100.0%) of 2,449 samples [Standard: 0 mg/L CaCO3]
+
+FECAL COLIFORM ANALYSIS
+--------------------------------------------------
+Geometric Mean: 232.2 CFU/100mL (Standard: 200)
+Samples > 400: 1,856 (38.4%)
+Impaired Stations: 380 of 489
+
+SIGNIFICANT TEMPORAL TRENDS
+--------------------------------------------------
+Fecal Coliform (MF): decreasing (-3.2% total change, p=0.0000)
+Fe, Total: decreasing (-25.0% total change, p=0.0000)
+Al, Total: decreasing (-89.7% total change, p=0.0000)
+Mn, Total: decreasing (-67.7% total change, p=0.0000)
+Se, Total: increasing (+30.0% total change, p=0.0419)
+pH: increasing (+4.6% total change, p=0.0000)
+DO: increasing (-5.9% total change, p=0.0156)
+Hot Acidity: increasing (-50.0% total change, p=0.0000)
+Alkalinity, Total: increasing (-14.2% total change, p=0.0000)
+Hardness: increasing (-33.6% total change, p=0.0055)
+
+TOP 10 IMPAIRED HUC12 SUBWATERSHEDS
+--------------------------------------------------
+Davis Creek-Guyandotte River: score=1020
+Ballard Fork-Mud River: score=912
+Crawley Creek-Guyandotte River: score=759
+Big Harts Creek: score=365
+Big Creek-Mud River: score=346
+Merrick Creek-Mud River: score=283
+Fourteenmile Creek-Guyandotte River: score=260
+Big Creek: score=240
+Smith Creek-Guyandotte River: score=213
+Middle Fork Mud River: score=203
+
+ASSESSMENT UNIT SUMMARY
+--------------------------------------------------
+Total AUs Analyzed: 335
+Impaired AUs: 268 (80.0%)
+
+================================================================================
+END OF REPORT
+================================================================================
