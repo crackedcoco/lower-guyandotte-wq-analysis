@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <style>
         :root {
             --deep-water: #0a1628;
@@ -66,6 +68,53 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
+        }
+
+        /* Partnership Banner */
+        .partnership-banner {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            flex-wrap: wrap;
+        }
+
+        .partner-link {
+            display: flex;
+            align-items: center;
+        }
+
+        .partner-logo {
+            height: 48px;
+            width: auto;
+            filter: brightness(1.1);
+            transition: filter 0.2s ease;
+        }
+
+        .partner-logo:hover {
+            filter: brightness(1.2);
+        }
+
+        .partner-text-fallback {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            color: var(--slate-100);
+        }
+
+        .partner-tagline {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.85rem;
+            color: var(--slate-400);
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .partnership-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
 
         /* Header */
@@ -233,8 +282,48 @@
             border-top: 1px solid var(--glass-border);
         }
 
+        .finding-note {
+            font-size: 0.75rem;
+            color: var(--amber-warning);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .citation-link {
+            color: var(--teal-glow);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--teal-dim);
+        }
+
+        .citation-link:hover {
+            color: var(--slate-100);
+            border-bottom-color: var(--slate-100);
+        }
+
+        .ionic-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red-alert);
+            padding: 0.2rem 0.4rem;
+            border-radius: 2px;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .conductivity-highlight {
+            border: 2px solid var(--red-alert);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+        }
+
+        .conductivity-highlight::before {
+            background: var(--red-alert);
+            width: 4px;
+        }
+
         /* Progress Bar */
-        .exceedance-bar {
+        .violation-bar {
             height: 6px;
             background: var(--river-dark);
             border-radius: 3px;
@@ -242,16 +331,16 @@
             overflow: hidden;
         }
 
-        .exceedance-fill {
+        .violation-fill {
             height: 100%;
             border-radius: 3px;
             transition: width 1.5s ease-out;
         }
 
-        .finding-card.critical .exceedance-fill { background: linear-gradient(90deg, var(--red-alert), #f87171); }
-        .finding-card.warning .exceedance-fill { background: linear-gradient(90deg, var(--amber-warning), #fbbf24); }
-        .finding-card.concerning .exceedance-fill { background: linear-gradient(90deg, var(--amber-dim), var(--amber-warning)); }
-        .finding-card.moderate .exceedance-fill { background: linear-gradient(90deg, var(--teal-dim), var(--teal-glow)); }
+        .finding-card.critical .violation-fill { background: linear-gradient(90deg, var(--red-alert), #f87171); }
+        .finding-card.warning .violation-fill { background: linear-gradient(90deg, var(--amber-warning), #fbbf24); }
+        .finding-card.concerning .violation-fill { background: linear-gradient(90deg, var(--amber-dim), var(--amber-warning)); }
+        .finding-card.moderate .violation-fill { background: linear-gradient(90deg, var(--teal-dim), var(--teal-glow)); }
 
         /* Comparison Table */
         .comparison-wrapper {
@@ -447,6 +536,7 @@
             border-radius: 4px;
             overflow: hidden;
             transition: transform 0.3s ease;
+            position: relative;
         }
 
         .plot-card:hover {
@@ -458,6 +548,146 @@
             height: auto;
             display: block;
             background: var(--river-dark);
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .plot-card:hover img {
+            opacity: 0.9;
+        }
+
+        .plot-card .zoom-hint {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .plot-card:hover .zoom-hint {
+            opacity: 1;
+        }
+
+        .zoom-hint svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--teal-glow);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 22, 40, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            cursor: pointer;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-caption {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: var(--slate-300);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            color: var(--slate-300);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .lightbox-close:hover {
+            background: var(--red-alert);
+            border-color: var(--red-alert);
+            color: white;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            color: var(--slate-300);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .lightbox-nav:hover {
+            background: var(--teal-dim);
+            border-color: var(--teal-glow);
+            color: white;
+        }
+
+        .lightbox-prev {
+            left: 1.5rem;
+        }
+
+        .lightbox-next {
+            right: 1.5rem;
+        }
+
+        .lightbox-hint {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: var(--slate-500);
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .plot-caption {
@@ -505,6 +735,20 @@
             color: var(--teal-glow);
         }
 
+        .method-card-expanded {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--glass) 0%, rgba(45, 212, 191, 0.05) 100%);
+            border-color: var(--teal-dim);
+        }
+
+        .method-card-expanded h4 {
+            font-size: 0.85rem;
+        }
+
+        .method-card strong {
+            color: var(--slate-200);
+        }
+
         /* Footer */
         footer {
             padding: 3rem 0;
@@ -520,6 +764,24 @@
 
         footer a:hover {
             color: var(--teal-glow);
+        }
+
+        .footer-partnership {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .footer-partner-logo {
+            height: 40px;
+            width: auto;
+            margin-bottom: 0.75rem;
+            filter: brightness(1.1);
+        }
+
+        .footer-partner-text {
+            font-size: 0.9rem;
+            color: var(--slate-400);
         }
 
         .footer-logo {
@@ -720,6 +982,691 @@
             text-align: right;
         }
 
+        /* Intro Section */
+        .intro-section {
+            background: linear-gradient(180deg, var(--river-dark) 0%, transparent 100%);
+        }
+
+        .intro-content {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .intro-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .intro-text {
+            color: var(--slate-300);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .intro-text strong {
+            color: var(--slate-100);
+        }
+
+        .intro-callout {
+            background: var(--glass);
+            border: 1px solid var(--teal-glow);
+            border-radius: 4px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .callout-icon {
+            color: var(--teal-glow);
+            flex-shrink: 0;
+        }
+
+        .callout-content h4 {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--slate-100);
+            margin-bottom: 0.5rem;
+        }
+
+        .callout-content p {
+            font-size: 0.9rem;
+            color: var(--slate-300);
+            line-height: 1.6;
+        }
+
+        .callout-link {
+            display: inline-block;
+            margin-top: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--teal-glow);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s ease;
+        }
+
+        .callout-link:hover {
+            color: var(--slate-100);
+        }
+
+        /* Court Order Section */
+        .court-order-section {
+            background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
+        }
+
+        .court-order-intro {
+            margin-bottom: 2rem;
+        }
+
+        .court-alert {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 4px;
+            color: var(--slate-200);
+        }
+
+        .court-alert svg {
+            color: var(--red-alert);
+            flex-shrink: 0;
+        }
+
+        .court-alert h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--red-alert);
+            margin-bottom: 0.5rem;
+        }
+
+        .court-alert p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--slate-300);
+        }
+
+        .court-streams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .court-stream-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: var(--glass);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            border-left: 4px solid var(--red-alert);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .court-stream-item:hover {
+            border-color: var(--red-alert);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .court-icon {
+            font-size: 1.25rem;
+        }
+
+        .court-stream-name {
+            flex: 1;
+            font-weight: 500;
+            color: var(--slate-100);
+        }
+
+        .court-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.3rem 0.6rem;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red-alert);
+            border-radius: 2px;
+        }
+
+        .court-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.02em;
+            padding: 0.3rem 0.6rem;
+            background: var(--river-dark);
+            color: var(--slate-400);
+            border-radius: 2px;
+        }
+
+        /* Consent Decree Map */
+        .consent-map-container {
+            margin-top: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .consent-map-header {
+            background: rgba(239, 68, 68, 0.1);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .consent-map-header h4 {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--slate-100);
+        }
+
+        .consent-map-legend {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--slate-400);
+        }
+
+        .legend-marker {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-marker.consent {
+            background: var(--red-alert);
+            box-shadow: 0 0 8px var(--red-alert);
+        }
+
+        .legend-marker.watershed {
+            background: var(--teal-dim);
+            opacity: 0.6;
+        }
+
+        #consentMap {
+            height: 400px;
+            background: var(--deep-water);
+        }
+
+        .consent-popup .stream-name {
+            font-weight: 600;
+            color: #ef4444;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .consent-popup .stream-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .consent-popup .stream-samples {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .leaflet-popup-content-wrapper {
+            background: #0f2438;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 6px;
+        }
+
+        .leaflet-popup-content {
+            margin: 0.75rem 1rem;
+            color: #e2e8f0;
+        }
+
+        .leaflet-popup-tip {
+            background: #0f2438;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .leaflet-container a.leaflet-popup-close-button {
+            color: #94a3b8;
+        }
+
+        .leaflet-container a.leaflet-popup-close-button:hover {
+            color: #ef4444;
+        }
+
+        .court-order-note {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--slate-500);
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Overlap Analysis */
+        .overlap-analysis {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+        }
+
+        .overlap-analysis h4 {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--slate-100);
+            margin-bottom: 0.75rem;
+        }
+
+        .overlap-analysis > p {
+            font-size: 0.9rem;
+            color: var(--slate-300);
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+        }
+
+        .overlap-analysis > p a {
+            color: var(--teal-glow);
+            text-decoration: none;
+        }
+
+        .overlap-analysis > p a:hover {
+            text-decoration: underline;
+        }
+
+        .overlap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .overlap-stat {
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .overlap-stat.match {
+            background: rgba(45, 212, 191, 0.1);
+            border: 1px solid rgba(45, 212, 191, 0.3);
+        }
+
+        .overlap-stat.related {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .overlap-stat.unique {
+            background: rgba(100, 116, 139, 0.1);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .overlap-number {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 500;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .overlap-stat.match .overlap-number { color: var(--teal-glow); }
+        .overlap-stat.related .overlap-number { color: var(--amber-warning); }
+        .overlap-stat.unique .overlap-number { color: var(--slate-400); }
+
+        .overlap-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--slate-200);
+            margin-bottom: 0.35rem;
+        }
+
+        .overlap-detail {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--slate-500);
+            line-height: 1.4;
+        }
+
+        .overlap-insight {
+            font-size: 0.85rem;
+            color: var(--slate-400);
+            font-style: italic;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+            margin-bottom: 0;
+        }
+
+        /* Roadmap Section */
+        .roadmap-section {
+            background: linear-gradient(180deg, var(--river-dark) 0%, transparent 50%);
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .roadmap-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .roadmap-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .roadmap-item h4 {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--slate-100);
+            margin-bottom: 0.5rem;
+        }
+
+        .roadmap-item p {
+            font-size: 0.9rem;
+            color: var(--slate-400);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .roadmap-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.3rem 0.6rem;
+            border-radius: 2px;
+        }
+
+        .roadmap-status.planned {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--slate-400);
+        }
+
+        .roadmap-status.in-progress {
+            background: rgba(45, 212, 191, 0.15);
+            color: var(--teal-glow);
+        }
+
+        .coordination-note {
+            background: var(--glass);
+            border: 1px solid var(--teal-glow);
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .coordination-note h4 {
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--teal-glow);
+            margin-bottom: 0.75rem;
+        }
+
+        .coordination-note p {
+            font-size: 0.95rem;
+            color: var(--slate-300);
+            line-height: 1.6;
+        }
+
+        /* Reading Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--teal-glow), var(--teal-dim));
+            z-index: 1001;
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 10px var(--teal-glow);
+        }
+
+        /* Fixed Navigation */
+        .fixed-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 0.75rem 2rem;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+
+        .fixed-nav.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fixed-nav.scrolled {
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1rem;
+            color: var(--teal-glow);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--slate-400);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--teal-glow);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .fixed-nav { padding: 0.75rem 1rem; }
+        }
+
+        /* Chapter Navigation Dots */
+        .chapter-nav {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 99;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .chapter-nav.visible {
+            opacity: 1;
+        }
+
+        .chapter-dot {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(45, 212, 191, 0.2);
+            border: 2px solid rgba(45, 212, 191, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chapter-dot:hover {
+            background: rgba(45, 212, 191, 0.4);
+            border-color: var(--teal-glow);
+            transform: scale(1.3);
+        }
+
+        .chapter-dot.active {
+            background: var(--teal-glow);
+            border-color: var(--teal-glow);
+            box-shadow: 0 0 12px var(--teal-glow);
+        }
+
+        .chapter-dot-label {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--river-dark);
+            border: 1px solid var(--glass-border);
+            padding: 0.35rem 0.6rem;
+            border-radius: 3px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--slate-200);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        .chapter-dot:hover .chapter-dot-label {
+            opacity: 1;
+            right: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .chapter-nav { right: 1rem; }
+            .chapter-dot-label { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            .chapter-nav { display: none; }
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Glossary Tooltips */
+        .glossary-term {
+            position: relative;
+            color: var(--teal-glow);
+            border-bottom: 1px dotted var(--teal-dim);
+            cursor: help;
+            transition: all 0.2s ease;
+        }
+
+        .glossary-term:hover {
+            color: var(--slate-100);
+            border-bottom-style: solid;
+        }
+
+        .glossary-term::before {
+            content: attr(data-definition);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--river-dark);
+            border: 1px solid var(--teal-glow);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--slate-200);
+            line-height: 1.5;
+            width: max-content;
+            max-width: 280px;
+            white-space: normal;
+            text-align: left;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+        }
+
+        .glossary-term::after {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--teal-glow);
+            z-index: 101;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .glossary-term:hover::before,
+        .glossary-term:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .glossary-term::before {
+                position: fixed;
+                bottom: auto;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                max-width: 85vw;
+            }
+            .glossary-term::after { display: none; }
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -743,9 +1690,57 @@
 <body>
     <div class="topo-bg"></div>
 
+    <!-- Reading Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Fixed Navigation -->
+    <nav class="fixed-nav" id="fixedNav">
+        <a href="#" class="nav-logo">Lower Guyandotte WQ</a>
+        <ul class="nav-links">
+            <li><a href="#summary">Findings</a></li>
+            <li><a href="#trends">Trends</a></li>
+            <li><a href="#court-order">Court Order</a></li>
+            <li><a href="#methodology">Methods</a></li>
+        </ul>
+    </nav>
+
+    <!-- Chapter Navigation Dots -->
+    <div class="chapter-nav" id="chapterNav">
+        <div class="chapter-dot" data-section="wq-intro">
+            <span class="chapter-dot-label">Background</span>
+        </div>
+        <div class="chapter-dot" data-section="temporal">
+            <span class="chapter-dot-label">Timeline</span>
+        </div>
+        <div class="chapter-dot" data-section="summary">
+            <span class="chapter-dot-label">Key Findings</span>
+        </div>
+        <div class="chapter-dot" data-section="trends">
+            <span class="chapter-dot-label">Trends</span>
+        </div>
+        <div class="chapter-dot" data-section="hotspots">
+            <span class="chapter-dot-label">Hotspots</span>
+        </div>
+        <div class="chapter-dot" data-section="court-order">
+            <span class="chapter-dot-label">Court Order</span>
+        </div>
+        <div class="chapter-dot" data-section="plots">
+            <span class="chapter-dot-label">Plots</span>
+        </div>
+        <div class="chapter-dot" data-section="methodology">
+            <span class="chapter-dot-label">Methods</span>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Header -->
         <header>
+            <div class="partnership-banner">
+                <a href="https://wvrivers.org" target="_blank" rel="noopener" class="partner-link">
+                    <img src="https://wvrivers.org/wp-content/uploads/2017/02/logo-1.png" alt="WV Rivers Coalition" class="partner-logo" onerror="this.parentElement.innerHTML='<span class=\'partner-text-fallback\'>WV Rivers Coalition</span>'">
+                </a>
+                <span class="partner-tagline">Produced in partnership with WV Rivers Coalition</span>
+            </div>
             <div class="header-meta">
                 <span class="tag">HUC 05070102</span>
                 <span class="tag">WV 47CSR2 Standards</span>
@@ -756,6 +1751,35 @@
                 Comprehensive assessment of the Lower Guyandotte watershed comparing ambient monitoring data against the <strong>2022 TMDL Report</strong> using West Virginia DEP standards.
             </p>
         </header>
+
+        <!-- Water Quality Standards Introduction -->
+        <section id="wq-intro" class="intro-section">
+            <div class="section-header">
+                <p class="section-label">Background</p>
+                <h2>What Are Water Quality Standards?</h2>
+            </div>
+            <div class="intro-content">
+                <div class="intro-text">
+                    <p>Water quality standards are <strong>legally enforceable limits</strong> that protect our rivers, streams, and drinking water sources. They define the maximum allowable concentrations of pollutants that waterways can contain while still supporting their <span class="glossary-term" data-definition="Legal classifications for waterways (e.g., public water supply, recreation, aquatic life) that determine which standards apply.">designated uses</span>—swimming, fishing, drinking water supply, and aquatic life.</p>
+                    <p style="margin-top: 1rem;">In West Virginia, these standards are established under <strong>WV 47CSR2</strong> (Water Quality Standards) and enforced by the DEP. When monitoring data shows that a stream exceeds these limits, it becomes "<span class="glossary-term" data-definition="A waterway that fails to meet water quality standards for its designated use. Listed under Clean Water Act Section 303(d).">impaired</span>" and subject to cleanup requirements under the federal Clean Water Act.</p>
+                    <p style="margin-top: 1rem;"><strong>Why does this matter?</strong> The Lower Guyandotte watershed has been heavily impacted by coal mining, resulting in elevated <span class="glossary-term" data-definition="A measure of water's ability to conduct electricity, indicating dissolved ion concentration. High conductivity from mining runoff is toxic to aquatic insects.">conductivity</span>, <span class="glossary-term" data-definition="A trace element that bioaccumulates in fish tissue. Even low concentrations can cause reproductive failure in fish populations.">selenium</span>, and other pollutants. Understanding which streams violate standards—and by how much—is critical for prioritizing restoration efforts and holding polluters accountable.</p>
+                </div>
+                <div class="intro-callout">
+                    <div class="callout-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </div>
+                    <div class="callout-content">
+                        <h4>Understanding the Data</h4>
+                        <p>Each parameter card below shows the <strong>% of samples violating</strong> the legal limit. Click any parameter to learn what it means and why it matters for aquatic health.</p>
+                        <a href="#methodology" class="callout-link">Jump to Methodology →</a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Temporal Relevance -->
         <section id="temporal">
@@ -874,14 +1898,14 @@
                 <p class="section-label">Executive Summary</p>
                 <h2>Key Findings</h2>
             </div>
-            <div class="findings-grid">
+            <div class="findings-grid reveal">
                 <div class="finding-card critical animate-in delay-1">
                     <p class="finding-param">Hot Acidity</p>
                     <p class="finding-value">100%</p>
-                    <p class="finding-detail">Exceedance rate — Mining legacy impact</p>
+                    <p class="finding-detail">Violation rate — Mining legacy impact</p>
                     <p class="finding-standard">Standard: 0 mg/L CaCO3 (2,449 samples)</p>
-                    <div class="exceedance-bar">
-                        <div class="exceedance-fill" style="width: 100%"></div>
+                    <div class="violation-bar">
+                        <div class="violation-fill" style="width: 100%"></div>
                     </div>
                 </div>
                 <div class="finding-card warning animate-in delay-2">
@@ -889,17 +1913,18 @@
                     <p class="finding-value">38.4%</p>
                     <p class="finding-detail">Geometric mean: 232.2 CFU/100mL</p>
                     <p class="finding-standard">Standards: 200 geomean / 400 max</p>
-                    <div class="exceedance-bar">
-                        <div class="exceedance-fill" style="width: 38.4%"></div>
+                    <div class="violation-bar">
+                        <div class="violation-fill" style="width: 38.4%"></div>
                     </div>
                 </div>
-                <div class="finding-card concerning animate-in delay-3">
-                    <p class="finding-param">Specific Conductance</p>
-                    <p class="finding-value">27.5%</p>
-                    <p class="finding-detail">Mining-related conductivity elevation</p>
-                    <p class="finding-standard">Standard: 500 µS/cm benchmark</p>
-                    <div class="exceedance-bar">
-                        <div class="exceedance-fill" style="width: 27.5%"></div>
+                <div class="finding-card critical conductivity-highlight animate-in delay-3">
+                    <p class="finding-param">Specific Conductance <span class="ionic-badge">Ionic Toxicity</span></p>
+                    <p class="finding-value">46.0%</p>
+                    <p class="finding-detail">Primary driver of aquatic life impairment (3,294 of 7,164 samples)</p>
+                    <p class="finding-standard">Threshold: 300 µS/cm — <a href="https://assessments.epa.gov/risk/document/&deid=233809" target="_blank" class="citation-link">EPA/600/R-10/023F</a></p>
+                    <p class="finding-note">⚠️ No WV state standard exists for conductivity</p>
+                    <div class="violation-bar">
+                        <div class="violation-fill" style="width: 46.0%"></div>
                     </div>
                 </div>
                 <div class="finding-card concerning animate-in delay-4">
@@ -907,8 +1932,8 @@
                     <p class="finding-value">18.4%</p>
                     <p class="finding-detail">Surface mining signature</p>
                     <p class="finding-standard">Standard: 250 mg/L</p>
-                    <div class="exceedance-bar">
-                        <div class="exceedance-fill" style="width: 18.4%"></div>
+                    <div class="violation-bar">
+                        <div class="violation-fill" style="width: 18.4%"></div>
                     </div>
                 </div>
                 <div class="finding-card concerning animate-in delay-5">
@@ -916,8 +1941,8 @@
                     <p class="finding-value">15.1%</p>
                     <p class="finding-detail">Increasing trend (+30%) — Concern</p>
                     <p class="finding-standard">Standard: 0.005 mg/L</p>
-                    <div class="exceedance-bar">
-                        <div class="exceedance-fill" style="width: 15.1%"></div>
+                    <div class="violation-bar">
+                        <div class="violation-fill" style="width: 15.1%"></div>
                     </div>
                 </div>
                 <div class="finding-card moderate animate-in delay-6">
@@ -925,8 +1950,8 @@
                     <p class="finding-value">80%</p>
                     <p class="finding-detail">268 of 335 AUs impaired</p>
                     <p class="finding-standard">For 303(d) listing consideration</p>
-                    <div class="exceedance-bar">
-                        <div class="exceedance-fill" style="width: 80%"></div>
+                    <div class="violation-bar">
+                        <div class="violation-fill" style="width: 80%"></div>
                     </div>
                 </div>
             </div>
@@ -951,37 +1976,37 @@
                     <tbody>
                         <tr>
                             <td><span class="param-name">Fecal Coliform</span></td>
-                            <td>38.4% exceedance<br><span style="color: var(--slate-400)">Geomean: 232.2 CFU/100mL</span></td>
-                            <td>~30% exceedance rate<br><span style="color: var(--slate-400)">Primary impairment cause</span></td>
+                            <td>38.4% violations<br><span style="color: var(--slate-400)">Geomean: 232.2 CFU/100mL</span></td>
+                            <td>~30% violations rate<br><span style="color: var(--slate-400)">Primary impairment cause</span></td>
                             <td><span class="status-badge worse">Higher — Method differences likely</span></td>
                         </tr>
                         <tr>
                             <td><span class="param-name">Iron, Total</span></td>
-                            <td>8.7% exceedance<br><span style="color: var(--slate-400)">Trend: -25% decrease</span></td>
+                            <td>8.7% violations<br><span style="color: var(--slate-400)">Trend: -25% decrease</span></td>
                             <td>Improving trend<br><span style="color: var(--slate-400)">AMD remediation success</span></td>
                             <td><span class="status-badge consistent">Consistent</span></td>
                         </tr>
                         <tr>
                             <td><span class="param-name">Aluminum, Dissolved</span></td>
-                            <td>0.5% exceedance<br><span style="color: var(--slate-400)">Trend: -89.7% decrease</span></td>
+                            <td>0.5% violations<br><span style="color: var(--slate-400)">Trend: -89.7% decrease</span></td>
                             <td>Generally improving<br><span style="color: var(--slate-400)">Below WV criteria</span></td>
                             <td><span class="status-badge consistent">Consistent</span></td>
                         </tr>
                         <tr>
                             <td><span class="param-name">Selenium, Total</span></td>
-                            <td>15.1% exceedance<br><span style="color: var(--slate-400)">Trend: +30% increase</span></td>
+                            <td>15.1% violations<br><span style="color: var(--slate-400)">Trend: +30% increase</span></td>
                             <td>Increasing concern<br><span style="color: var(--slate-400)">Surface mining correlation</span></td>
                             <td><span class="status-badge consistent">Consistent</span></td>
                         </tr>
                         <tr>
                             <td><span class="param-name">Specific Conductance</span></td>
-                            <td>27.5% exceedance<br><span style="color: var(--slate-400)">Mining impact indicator</span></td>
+                            <td>27.5% violations<br><span style="color: var(--slate-400)">Mining impact indicator</span></td>
                             <td>Elevated throughout<br><span style="color: var(--slate-400)">TDS proxy parameter</span></td>
                             <td><span class="status-badge consistent">Consistent</span></td>
                         </tr>
                         <tr>
                             <td><span class="param-name">Manganese, Total</span></td>
-                            <td>1.3% exceedance<br><span style="color: var(--slate-400)">Trend: -67.7% decrease</span></td>
+                            <td>1.3% violations<br><span style="color: var(--slate-400)">Trend: -67.7% decrease</span></td>
                             <td>Improving with AMD treatment<br><span style="color: var(--slate-400)">Co-occurs with Fe</span></td>
                             <td><span class="status-badge consistent">Consistent</span></td>
                         </tr>
@@ -996,7 +2021,7 @@
                 <p class="section-label">Temporal Analysis</p>
                 <h2>Significant Trends</h2>
             </div>
-            <div class="trends-container">
+            <div class="trends-container reveal">
                 <div class="trend-category improving">
                     <h3>
                         <svg class="trend-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1066,7 +2091,7 @@
                 <p class="section-label">Prioritization</p>
                 <h2>Top 10 Impaired HUC12 Subwatersheds</h2>
             </div>
-            <div class="hotspots-list">
+            <div class="hotspots-list reveal">
                 <div class="hotspot-item">
                     <span class="hotspot-rank">1</span>
                     <span class="hotspot-name">Davis Creek-Guyandotte River</span>
@@ -1120,38 +2145,162 @@
             </div>
         </section>
 
+        <!-- Court Order Streams -->
+        <section id="court-order" class="court-order-section">
+            <div class="section-header">
+                <p class="section-label">Legal Priority</p>
+                <h2>Consent Decree Streams</h2>
+            </div>
+            <div class="court-order-intro">
+                <div class="court-alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="28" height="28">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <div>
+                        <h4>Federal Consent Decree — Ionic Toxicity TMDLs Required</h4>
+                        <p>These 11 streams are subject to <strong>Case 3:24-cv-00130</strong> (U.S. District Court, S.D. West Virginia), a consent decree filed November 6, 2024. WVDEP must release draft <span class="glossary-term" data-definition="Total Maximum Daily Load — a calculation of the maximum pollution a waterway can receive while still meeting standards. Includes waste load allocations for permitted sources.">Ionic Toxicity TMDLs</span> by <strong>May 1, 2026</strong> and submit final TMDLs to EPA by <strong>September 1, 2026</strong>.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="court-streams-grid reveal">
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Upper Mud River</span>
+                    <span class="court-code">WV-OGL-10</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Sugartree Branch</span>
+                    <span class="court-code">WV-OGL-10-DW</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Stanley Fork</span>
+                    <span class="court-code">WV-OGL-10-DX</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Ballard Fork</span>
+                    <span class="court-code">WV-OGL-10-EA</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Big Ugly Creek</span>
+                    <span class="court-code">WV-OGL-89</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Limestone Branch</span>
+                    <span class="court-code">WV-OGL-111</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Ed Stone Branch</span>
+                    <span class="court-code">WV-OGL-112-D</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Crawley Creek</span>
+                    <span class="court-code">WV-OGL-117</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">South Fork Crawley Creek</span>
+                    <span class="court-code">WV-OGL-117-M</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Rocky Branch</span>
+                    <span class="court-code">WV-OGL-130</span>
+                </div>
+                <div class="court-stream-item">
+                    <span class="court-icon">⚖️</span>
+                    <span class="court-stream-name">Merrick Creek</span>
+                    <span class="court-code">WV-OGL-10-A</span>
+                </div>
+            </div>
+            <!-- Overlap Analysis -->
+            <div class="overlap-analysis">
+                <h4>Overlap with Data-Driven Priorities</h4>
+                <p>Comparing the 11 consent decree streams with our <a href="#hotspots">Top 10 Impaired HUC12 analysis</a> reveals partial alignment:</p>
+                <div class="overlap-grid">
+                    <div class="overlap-stat match">
+                        <span class="overlap-number">3</span>
+                        <span class="overlap-label">Direct matches with Top 10</span>
+                        <span class="overlap-detail">Ballard Fork (#2), Crawley Creek (#3), Merrick Creek (#6)</span>
+                    </div>
+                    <div class="overlap-stat related">
+                        <span class="overlap-number">~6</span>
+                        <span class="overlap-label">Within or tributary to Top 10</span>
+                        <span class="overlap-detail">Including Upper Mud River tributaries and South Fork Crawley Creek</span>
+                    </div>
+                    <div class="overlap-stat unique">
+                        <span class="overlap-number">5</span>
+                        <span class="overlap-label">Not in Top 10 hotspots</span>
+                        <span class="overlap-detail">Big Ugly Creek, Limestone Branch, Ed Stone Branch, Rocky Branch, others</span>
+                    </div>
+                </div>
+                <p class="overlap-insight">This suggests the lawsuit captured streams beyond what violation-count scoring alone would prioritize—potentially reflecting on-the-ground conditions, community impacts, or specific polluter accountability not fully reflected in aggregate statistics.</p>
+            </div>
+
+            <!-- Consent Decree Map -->
+            <div class="consent-map-container">
+                <div class="consent-map-header">
+                    <h4>Stream Locations</h4>
+                    <div class="consent-map-legend">
+                        <div class="legend-item">
+                            <span class="legend-marker consent"></span>
+                            <span>Consent Decree Stream</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="consentMap"></div>
+            </div>
+
+            <p class="court-order-note">Source: <em>Sierra Club, et al. v. U.S. EPA, et al.</em>, Case 3:24-cv-00130 (S.D. W.Va., filed Nov. 6, 2024). Plaintiffs include WV Rivers Coalition and WV Highlands Conservancy.</p>
+        </section>
+
         <!-- Analysis Plots -->
         <section id="plots">
             <div class="section-header">
                 <p class="section-label">Visualizations</p>
                 <h2>Analysis Plots</h2>
             </div>
-            <div class="plots-grid">
+            <div class="plots-grid reveal">
                 <div class="plot-card">
-                    <img src="wq_analysis_output_v2/plots/exceedance_summary.png" alt="Exceedance Rates by Parameter" onerror="this.parentElement.style.display='none'">
-                    <p class="plot-caption">Exceedance rates for TMDL-listed parameters against WV 47CSR2 standards</p>
+                    <span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
+                    <img src="wq_analysis_output_v2/plots/exceedance_summary.png" alt="Violation Rates by Parameter" onerror="this.parentElement.style.display='none'">
+                    <p class="plot-caption">Violation rates for TMDL-listed parameters against WV 47CSR2 standards</p>
                 </div>
                 <div class="plot-card">
+                    <span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
                     <img src="wq_analysis_output_v2/plots/trend_summary.png" alt="Temporal Trends" onerror="this.parentElement.style.display='none'">
                     <p class="plot-caption">Long-term temporal trends for key water quality parameters</p>
                 </div>
                 <div class="plot-card">
+                    <span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
                     <img src="wq_analysis_output_v2/plots/fecal_coliform_detail.png" alt="Fecal Coliform Distribution" onerror="this.parentElement.style.display='none'">
                     <p class="plot-caption">Fecal coliform concentration distribution with regulatory thresholds</p>
                 </div>
                 <div class="plot-card">
+                    <span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
                     <img src="wq_analysis_output_v2/plots/mining_signature.png" alt="Mining Impact Signature" onerror="this.parentElement.style.display='none'">
                     <p class="plot-caption">Specific conductance vs sulfate correlation — mining impact indicator</p>
                 </div>
                 <div class="plot-card">
+                    <span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
                     <img src="wq_analysis_output_v2/plots/huc12_hotspots.png" alt="HUC12 Impairment Scores" onerror="this.parentElement.style.display='none'">
                     <p class="plot-caption">HUC12 subwatershed impairment severity ranking</p>
                 </div>
                 <div class="plot-card">
+                    <span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
                     <img src="wq_analysis_output_v2/plots/temporal_coverage.png" alt="Temporal Coverage" onerror="this.parentElement.style.display='none'">
                     <p class="plot-caption">Sampling intensity and temporal coverage across decades</p>
                 </div>
                 <div class="plot-card">
+                    <span class="zoom-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></span>
                     <img src="wq_analysis_output_v2/plots/sc_trend.png" alt="Specific Conductance Trend" onerror="this.parentElement.style.display='none'">
                     <p class="plot-caption">Specific conductance trend over time — mining impact indicator</p>
                 </div>
@@ -1181,24 +2330,91 @@
                     <h4>Fecal Coliform Protocol</h4>
                     <p>Two-part standard assessment: <code>200 CFU/100mL</code> geometric mean calculated per station, plus <code>400 CFU/100mL</code> single-sample maximum threshold.</p>
                 </div>
-                <div class="method-card">
-                    <h4>Trend Analysis</h4>
-                    <p>Mann-Kendall test for monotonic trends with Sen's slope estimator for magnitude. Significance threshold <code>p &lt; 0.05</code>.</p>
+                <div class="method-card method-card-expanded">
+                    <h4>Trend Analysis Methodology</h4>
+                    <p><strong>Statistical Model:</strong> Non-parametric Mann-Kendall test for monotonic trends, chosen because it doesn't assume normal distribution—ideal for environmental data with seasonal patterns and outliers.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Slope Estimation:</strong> Sen's slope estimator calculates the median of all pairwise slopes between data points, providing a robust measure of trend magnitude resistant to outliers.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Confidence Level:</strong> Significance threshold <code>p &lt; 0.05</code> (95% confidence). Trends reported only when we're 95% confident they're not due to random chance.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Key Assumptions:</strong> Data points are temporally independent; seasonal adjustments applied where appropriate; minimum 10 data points required per parameter.</p>
+                    <p style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--slate-500);"><em>Note: Trend percentages represent relative change from earliest to most recent decade median values.</em></p>
                 </div>
                 <div class="method-card">
                     <h4>Hotspot Scoring</h4>
-                    <p>Composite impairment score per HUC12 based on parameter-specific exceedance counts weighted by ecological severity.</p>
+                    <p>Composite impairment score per HUC12 based on parameter-specific violation counts weighted by ecological severity.</p>
+                </div>
+                <div class="method-card method-card-expanded">
+                    <h4>Conductivity Benchmark (300 µS/cm)</h4>
+                    <p><strong>Source:</strong> <a href="https://assessments.epa.gov/risk/document/&deid=233809" target="_blank" class="citation-link">U.S. EPA (2011). A Field-Based Aquatic Life Benchmark For Conductivity In Central Appalachian Streams. EPA/600/R-10/023F.</a></p>
+                    <p style="margin-top: 0.75rem;"><strong>What it means:</strong> The 300 µS/cm threshold represents the conductivity level at which 5% of macroinvertebrate genera experience extirpation (local extinction) from streams. This benchmark was derived from field data in Central Appalachian streams, including West Virginia.</p>
+                    <p style="margin-top: 0.75rem;"><strong>Important note:</strong> West Virginia has not adopted a numeric conductivity standard. The 300 µS/cm benchmark is EPA guidance, not a state-enforceable limit. However, it remains the best available science for assessing ionic toxicity impacts on aquatic life in this region.</p>
                 </div>
             </div>
         </section>
+
+        <!-- Coming Soon / Roadmap -->
+        <section id="roadmap" class="roadmap-section">
+            <div class="section-header">
+                <p class="section-label">Development Roadmap</p>
+                <h2>Coming Soon</h2>
+            </div>
+            <div class="roadmap-grid">
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">🔍</div>
+                    <h4>Interactive Filtering</h4>
+                    <p>Filter data by date range, parameter, stream, and violation severity. Build custom views of the data that matter most to your advocacy work.</p>
+                    <span class="roadmap-status planned">Planned</span>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">📊</div>
+                    <h4>Crosstab Analysis</h4>
+                    <p>Compare multiple parameters simultaneously. Explore correlations between conductivity, selenium, and other mining-related pollutants.</p>
+                    <span class="roadmap-status planned">Planned</span>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">📈</div>
+                    <h4>Dynamic Histograms</h4>
+                    <p>Similar to the brook trout habitat model—map data slices in real-time to visualize distribution patterns across the watershed.</p>
+                    <span class="roadmap-status planned">Planned</span>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">📖</div>
+                    <h4>Parameter Interpretation Guide</h4>
+                    <p>Detailed explanations of what each water quality parameter means, its ecological significance, and how to interpret the measurements.</p>
+                    <span class="roadmap-status in-progress">In Progress</span>
+                </div>
+            </div>
+            <div class="coordination-note">
+                <h4>Want to Contribute?</h4>
+                <p>We're actively seeking input on parameter interpretation and scientific background. If you have expertise in water quality science or Appalachian watershed ecology, we'd love to hear from you.</p>
+                <p style="margin-top: 0.75rem;">Contact <a href="https://wvrivers.org/contact" target="_blank">WV Rivers Coalition</a> to get involved in this project.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+        <button class="lightbox-nav lightbox-prev" aria-label="Previous">&lsaquo;</button>
+        <button class="lightbox-nav lightbox-next" aria-label="Next">&rsaquo;</button>
+        <div class="lightbox-content">
+            <img src="" alt="" id="lightbox-img">
+            <p class="lightbox-caption" id="lightbox-caption"></p>
+        </div>
+        <span class="lightbox-hint">ESC to close · Arrow keys to navigate</span>
     </div>
 
     <!-- Footer -->
     <footer>
         <div class="container">
+            <div class="footer-partnership">
+                <a href="https://wvrivers.org" target="_blank" rel="noopener">
+                    <img src="https://wvrivers.org/wp-content/uploads/2017/02/logo-1.png" alt="WV Rivers Coalition" class="footer-partner-logo" onerror="this.style.display='none'">
+                </a>
+                <p class="footer-partner-text">Produced in partnership with <a href="https://wvrivers.org" target="_blank">WV Rivers Coalition</a></p>
+            </div>
             <p class="footer-logo">Lower Guyandotte WQ Analysis</p>
             <p>Data Source: <a href="https://dep.wv.gov" target="_blank">West Virginia DEP</a> Ambient Water Quality Monitoring Program</p>
-            <p style="margin-top: 0.5rem;">Analysis generated January 6, 2026 | Python v2.0 with WV 47CSR2 Standards</p>
+            <p style="margin-top: 0.5rem;">Analysis generated January 2026 | Python v2.0 with WV 47CSR2 Standards</p>
             <p style="margin-top: 1rem; color: var(--slate-500);">
                 <a href="https://github.com/crackedcoco/lower-guyandotte-wq-analysis" target="_blank">View source on GitHub</a>
             </p>
@@ -1206,11 +2422,85 @@
     </footer>
 
     <script>
+        // Reading Progress Bar
+        const progressBar = document.getElementById('progressBar');
+        const fixedNav = document.getElementById('fixedNav');
+        const chapterNav = document.getElementById('chapterNav');
+
+        function updateProgress() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            progressBar.style.width = progress + '%';
+
+            // Show/hide fixed nav and chapter nav after scrolling past header
+            if (scrollTop > 300) {
+                fixedNav.classList.add('visible', 'scrolled');
+                chapterNav.classList.add('visible');
+            } else {
+                fixedNav.classList.remove('visible', 'scrolled');
+                chapterNav.classList.remove('visible');
+            }
+        }
+
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
+
+        // Chapter Navigation Dots
+        const chapterDots = document.querySelectorAll('.chapter-dot');
+        const sections = document.querySelectorAll('section[id]');
+
+        function updateChapterDots() {
+            const scrollPos = window.scrollY + window.innerHeight / 3;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+
+                if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+                    chapterDots.forEach(dot => {
+                        dot.classList.remove('active');
+                        if (dot.dataset.section === sectionId) {
+                            dot.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateChapterDots);
+        updateChapterDots();
+
+        // Click handler for chapter dots
+        chapterDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const sectionId = dot.dataset.section;
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Scroll Reveal Animation
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
+
         // Animate progress bars on scroll
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    const bars = entry.target.querySelectorAll('.exceedance-fill');
+                    const bars = entry.target.querySelectorAll('.violation-fill');
                     bars.forEach(bar => {
                         const width = bar.style.width;
                         bar.style.width = '0%';
@@ -1234,6 +2524,135 @@
                     behavior: 'smooth'
                 });
             });
+        });
+
+        // Lightbox functionality
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCaption = document.getElementById('lightbox-caption');
+        const plotImages = document.querySelectorAll('.plot-card img');
+        let currentIndex = 0;
+        let visiblePlots = [];
+
+        function updateVisiblePlots() {
+            visiblePlots = Array.from(plotImages).filter(img => img.parentElement.style.display !== 'none');
+        }
+
+        function openLightbox(index) {
+            updateVisiblePlots();
+            if (visiblePlots.length === 0) return;
+            currentIndex = index;
+            const img = visiblePlots[currentIndex];
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            lightboxCaption.textContent = img.closest('.plot-card').querySelector('.plot-caption')?.textContent || '';
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(direction) {
+            updateVisiblePlots();
+            if (visiblePlots.length === 0) return;
+            currentIndex = (currentIndex + direction + visiblePlots.length) % visiblePlots.length;
+            const img = visiblePlots[currentIndex];
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            lightboxCaption.textContent = img.closest('.plot-card').querySelector('.plot-caption')?.textContent || '';
+        }
+
+        // Click handlers for plot images
+        plotImages.forEach((img, index) => {
+            img.addEventListener('click', () => {
+                updateVisiblePlots();
+                const visibleIndex = visiblePlots.indexOf(img);
+                if (visibleIndex !== -1) {
+                    openLightbox(visibleIndex);
+                }
+            });
+        });
+
+        // Lightbox controls
+        document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+        document.querySelector('.lightbox-prev').addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateLightbox(-1);
+        });
+        document.querySelector('.lightbox-next').addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateLightbox(1);
+        });
+
+        // Close on background click
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+
+        // Initialize Consent Decree Map
+        document.addEventListener('DOMContentLoaded', function() {
+            // Consent decree streams with coordinates (from WQ data)
+            const consentStreams = [
+                { name: 'Upper Mud River', code: 'WV-OGL-10', lat: 38.2450, lon: -82.0644, samples: 39207 },
+                { name: 'Sugartree Branch', code: 'WV-OGL-10-DW', lat: 38.0917, lon: -81.9513, samples: 2805 },
+                { name: 'Stanley Fork', code: 'WV-OGL-10-DX', lat: 38.0838, lon: -81.9540, samples: 564 },
+                { name: 'Ballard Fork', code: 'WV-OGL-10-EA', lat: 38.0695, lon: -81.9338, samples: 1042 },
+                { name: 'Big Ugly Creek', code: 'WV-OGL-89', lat: 38.0630, lon: -82.0379, samples: 5002 },
+                { name: 'Limestone Branch', code: 'WV-OGL-111', lat: 38.0112, lon: -82.0440, samples: 419 },
+                { name: 'Ed Stone Branch', code: 'WV-OGL-112-D', lat: 38.0105, lon: -82.0123, samples: 645 },
+                { name: 'Crawley Creek', code: 'WV-OGL-117', lat: 37.9121, lon: -82.0520, samples: 3177 },
+                { name: 'South Fork Crawley Creek', code: 'WV-OGL-117-M', lat: 37.8994, lon: -82.0462, samples: 1238 },
+                { name: 'Rocky Branch', code: 'WV-OGL-130', lat: 37.9314, lon: -82.0138, samples: 345 },
+                { name: 'Merrick Creek', code: 'WV-OGL-10-A', lat: 38.3959, lon: -82.0949, samples: 10290 }
+            ];
+
+            // Create map centered on Lower Guyandotte
+            const map = L.map('consentMap', {
+                scrollWheelZoom: false
+            }).setView([38.1, -82.0], 9);
+
+            // Dark basemap
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Custom red marker icon
+            const consentIcon = L.divIcon({
+                className: 'consent-marker',
+                html: '<div style="width: 14px; height: 14px; background: #ef4444; border: 2px solid #fca5a5; border-radius: 50%; box-shadow: 0 0 10px #ef4444;"></div>',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+                popupAnchor: [0, -10]
+            });
+
+            // Add markers for each consent decree stream
+            consentStreams.forEach(stream => {
+                const marker = L.marker([stream.lat, stream.lon], { icon: consentIcon }).addTo(map);
+                marker.bindPopup(`
+                    <div class="consent-popup">
+                        <div class="stream-name">${stream.name}</div>
+                        <div class="stream-code">${stream.code}</div>
+                        <div class="stream-samples">${stream.samples.toLocaleString()} water quality samples</div>
+                    </div>
+                `);
+            });
+
+            // Fit bounds to show all markers with padding
+            const bounds = L.latLngBounds(consentStreams.map(s => [s.lat, s.lon]));
+            map.fitBounds(bounds, { padding: [30, 30] });
         });
     </script>
 </body>
